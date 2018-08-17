@@ -1,0 +1,9 @@
+CREATE USER {{pleroma_user}} WITH ENCRYPTED PASSWORD '{{pleroma_db_passwd}}' CREATEDB;
+-- in case someone runs this second time accidentally
+ALTER USER {{pleroma_user}} WITH ENCRYPTED PASSWORD '{{pleroma_db_passwd}}' CREATEDB;
+CREATE DATABASE {{pleroma_user}};
+ALTER DATABASE {{pleroma_user}} OWNER TO {{pleroma_user}};
+\c {{pleroma_user}};
+--Extensions made by ecto.migrate that need superuser access
+CREATE EXTENSION IF NOT EXISTS citext;
+CREATE EXTENSION IF NOT EXISTS pg_trgm;

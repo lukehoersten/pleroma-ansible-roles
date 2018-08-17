@@ -1,0 +1,9 @@
+syntax: regexp
+\.DS_Store$
+\.vagrant/
+\.tfstate\.backup$
+\.tfstate\.blank$
+\.terraform/
+TAGS$
+tags$
+^group_vars/

@@ -1,0 +1,5 @@
+---
+
+pleroma_user: "pleroma"
+pleroma_instance_name: "{{pleroma_host}}"
+pleroma_admin_email: "admin@{{pleroma_host}}"

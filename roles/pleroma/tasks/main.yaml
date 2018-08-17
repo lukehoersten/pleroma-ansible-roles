@@ -1,0 +1,86 @@
+---
+
+- name: add erland solutions key
+  become: yes
+  apt_key: "url=http://packages.erlang-solutions.com/debian/erlang_solutions.asc"
+
+- name: install erland solutions repo
+  become: yes
+  apt_repository: repo="deb http://binaries.erlang-solutions.com/debian bionic contrib"
+
+- name: update apt package cache
+  become: yes
+  apt: upgrade="dist" update_cache="yes" cache_valid_time="3600"
+
+- name: install extra apt packages
+  become: yes
+  apt: name="{{item}}"
+  with_items:
+    - "postgresql"
+    - "esl-erlang"
+    - "elixir"
+    - "build-essential"
+    - "git"
+
+- name: add users
+  become: yes
+  user: name="{{pleroma_user}}" shell="/bin/bash"
+
+- name: checkout plemora
+  become: yes
+  become_user: "{{pleroma_user}}"
+  git:
+    repo: "https://git.pleroma.social/pleroma/pleroma.git"
+    dest: "~{{pleroma_user}}/pleroma"
+    force: yes
+
+- name: update elixir dep
+  become: yes
+  become_user: "{{pleroma_user}}"
+  lineinfile:
+    path: "~{{pleroma_user}}/pleroma/mix.exs"
+    regexp: 'elixir: "~> 1.4",$'
+    line: 'elixir: "~> 1.7",'
+
+- name: install pleroma config files
+  template:
+    src: "{{item}}.j2"
+    dest: "~{{pleroma_user}}/pleroma/config/{{item}}"
+    owner: "{{pleroma_user}}"
+    group: "{{pleroma_user}}"
+    mode: "0775"
+  become: yes
+  become_user: "{{pleroma_user}}"
+  with_items:
+    - "setup_db.psql"
+    - "dev.secret.exs"
+
+- name: install pleroma psql
+  become: yes
+  become_user: "postgres"
+  command: "psql -f ~{{pleroma_user}}/pleroma/config/setup_db.psql"
+
+- name: migrate db
+  become: yes
+  become_user: "{{pleroma_user}}"
+  command: "{{item}}"
+  args:
+    chdir: "~{{pleroma_user}}/pleroma/"
+  with_items:
+    - "mix local.hex --force"
+    - "mix local.rebar --force"
+    - "mix deps.get"
+    - "mix ecto.migrate"
+
+- name: install pleroma systemd service
+  template:
+    src: "pleroma.service.j2"
+    dest: "/lib/systemd/system/pleroma.service"
+    owner: "{{pleroma_user}}"
+    group: "{{pleroma_user}}"
+    mode: "0770"
+  become: yes
+
+- name: enable pleroma systemd service
+  systemd: name="pleroma" enabled="yes" state="started"
+  become: yes

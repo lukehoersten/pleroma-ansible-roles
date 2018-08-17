@@ -1,0 +1,13 @@
+---
+
+- name: setup python2
+  hosts: all
+  gather_facts: no
+  tasks:
+    - name: install python2
+      become: yes
+      raw: "apt-get install python -y"
+
+- hosts: all
+  roles:
+    - pleroma
