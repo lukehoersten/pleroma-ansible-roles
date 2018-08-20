@@ -1,0 +1,17 @@
+---
+
+# https://certbot.eff.org/lets-encrypt/ubuntuxenial-nginx
+
+- name: add certbot (letsencrypt) repo
+  become: yes
+  apt_repository: repo="ppa:certbot/certbot"
+
+- name: install nginx packages
+  become: yes
+  apt: name="python-certbot-nginx"
+  notify: restart nginx
+
+- name: install certbot in nginx
+  become: yes
+  command: "certbot certonly --nginx -n --agree-tos -d {{nginx_server_name}} -m {{nginx_admin_email}}"
+  notify: restart nginx

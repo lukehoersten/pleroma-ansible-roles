@@ -1,0 +1,6 @@
+---
+
+nginx_enable_ssl: No
+nginx_port: 80
+nginx_ssl_port: 443
+nginx_server_name: "{{ansible_host}}"

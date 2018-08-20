@@ -6,4 +6,4 @@ syntax: regexp
 \.terraform/
 TAGS$
 tags$
-^group_vars/
+^inventory/

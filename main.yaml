@@ -10,4 +10,5 @@
 
 - hosts: all
   roles:
+    - nginx
     - pleroma
