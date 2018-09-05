@@ -54,11 +54,13 @@
   with_items:
     - "setup_db.psql"
     - "dev.secret.exs"
+  notify: restart pleroma
 
 - name: install pleroma psql
   become: yes
   become_user: "postgres"
   command: "psql -f ~{{pleroma_user}}/pleroma/config/setup_db.psql"
+  notify: restart pleroma
 
 - name: migrate db
   become: yes
@@ -71,6 +73,7 @@
     - "mix local.rebar --force"
     - "mix deps.get"
     - "mix ecto.migrate"
+  notify: restart pleroma
 
 - name: install pleroma systemd service
   template:

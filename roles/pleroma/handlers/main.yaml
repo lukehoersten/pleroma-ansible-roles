@@ -1,0 +1,5 @@
+---
+
+- name: restart pleroma
+  become: yes
+  systemd: name="pleroma" state="restarted" daemon_reload="yes"
