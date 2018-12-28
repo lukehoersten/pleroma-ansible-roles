@@ -34,14 +34,6 @@
     dest: "~{{pleroma_user}}/pleroma"
     force: yes
 
-- name: update elixir dep
-  become: yes
-  become_user: "{{pleroma_user}}"
-  lineinfile:
-    path: "~{{pleroma_user}}/pleroma/mix.exs"
-    regexp: 'elixir: "~> 1.4",$'
-    line: 'elixir: "~> 1.7",'
-
 - name: install pleroma config files
   template:
     src: "{{item}}.j2"
