@@ -45,7 +45,7 @@
   become_user: "{{pleroma_user}}"
   with_items:
     - "setup_db.psql"
-    - "dev.secret.exs"
+    - "prod.secret.exs"
   notify: restart pleroma
 
 - name: install pleroma psql

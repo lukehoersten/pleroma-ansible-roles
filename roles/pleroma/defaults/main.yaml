@@ -2,6 +2,7 @@
 
 pleroma_user: "pleroma"
 pleroma_instance_name: "{{pleroma_host}}"
+pleroma_desc: "A Pleroma fediverse instance."
 pleroma_host: "localhost"
 pleroma_scheme: "https"
 pleroma_port: 443
