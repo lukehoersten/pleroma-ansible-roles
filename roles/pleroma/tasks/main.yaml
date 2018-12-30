@@ -66,6 +66,8 @@
     - "mix deps.get"
     - "mix ecto.migrate"
   notify: restart pleroma
+  environment:
+    MIX_ENV: "prod"
 
 - name: install pleroma systemd service
   template:
