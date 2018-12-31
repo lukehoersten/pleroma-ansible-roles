@@ -1,5 +1,6 @@
 CREATE USER {{pleroma_user}} WITH ENCRYPTED PASSWORD '{{pleroma_db_passwd}}';
-CREATE DATABASE {{pleroma_user}} OWNER {{pleroma_user}};
+CREATE DATABASE {{pleroma_user}};
+ALTER DATABASE {{pleroma_user}} OWNER TO {{pleroma_user}};
 \c {{pleroma_user}};
 --Extensions made by ecto.migrate that need superuser access
 CREATE EXTENSION IF NOT EXISTS citext;

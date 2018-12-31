@@ -50,9 +50,12 @@
 
 - name: install pleroma psql
   become: yes
-  become_user: "postgres"
-  command: "psql -f ~{{pleroma_user}}/pleroma/config/setup_db.psql"
+  become_user: "{{pleroma_db_superuser}}"
+  command: "psql -f ~{{pleroma_user}}/pleroma/config/setup_db.psql -h {{pleroma_db_host}}"
   notify: restart pleroma
+  environment:
+    PGUSER: "{{pleroma_db_superuser}}"
+    PGPASSWORD: "{{pleroma_db_superpass}}"
 
 - name: migrate db
   become: yes

@@ -10,3 +10,4 @@ pleroma_admin_email: "admin@{{pleroma_host}}"
 pleroma_char_limit: 5000
 pleroma_signup_open: "true"
 pleroma_db_host: "localhost"
+pleroma_db_superuser: "postgres"
