@@ -1,0 +1,17 @@
+---
+
+- name: install nginx packages
+  become: yes
+  apt: name="nginx"
+
+- name: disable default site
+  become: yes
+  file: path="/etc/nginx/sites-enabled/default" state="absent"
+  notify: restart nginx
+
+- import_tasks: certbot.yaml
+  when: nginx_enable_ssl
+
+- name: enable nginx service
+  become: yes
+  systemd: name="nginx" enabled="yes" state="started"

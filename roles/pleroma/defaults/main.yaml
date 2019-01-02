@@ -4,8 +4,9 @@ pleroma_user: "pleroma"
 pleroma_instance_name: "{{pleroma_host}}"
 pleroma_desc: "A Pleroma fediverse instance."
 pleroma_host: "localhost"
-pleroma_scheme: "https"
-pleroma_port: 443
+pleroma_scheme: "http"
+pleroma_port: 4000
+pleroma_url: "{{pleroma_scheme}}://{{pleroma_host}}:{{pleroma_port}}"
 pleroma_admin_email: "admin@{{pleroma_host}}"
 pleroma_char_limit: 5000
 pleroma_signup_open: "true"

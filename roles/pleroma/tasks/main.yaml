@@ -75,12 +75,12 @@
 - name: install pleroma systemd service
   template:
     src: "pleroma.service.j2"
-    dest: "/lib/systemd/system/pleroma.service"
+    dest: "/lib/systemd/system/{{pleroma_user}}.service"
     owner: "{{pleroma_user}}"
     group: "{{pleroma_user}}"
     mode: "0770"
   become: yes
 
 - name: enable pleroma systemd service
-  systemd: name="pleroma" enabled="yes" state="started"
+  systemd: name="{{pleroma_user}}" enabled="yes" state="started"
   become: yes

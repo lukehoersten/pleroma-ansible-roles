@@ -8,7 +8,33 @@
       become: yes
       raw: "apt-get install python -y"
 
-- hosts: all
+    - name: set hostname in OS
+      become: yes
+      hostname: name="{{inventory_hostname}}"
+
+    - name: change timezone to UTC
+      become: yes
+      timezone: name="UTC"
+
+- hosts: pleroma-01
   roles:
-    - nginx
-    - pleroma
+    - role: pleroma
+      pleroma_host: "haskell.social"
+      pleroma_user: "pleroma_haskell_social"
+      pleroma_port: 4000
+
+    - role: pleroma
+      pleroma_host: "nth.io"
+      pleroma_user: "pleroma_nth_io"
+      pleroma_port: 4001
+
+
+# - hosts: haskell.social
+#   roles:
+#     - nginx
+#     - pleroma
+
+# - hosts: nth.io
+#   roles:
+#     - nginx
+#     - pleroma

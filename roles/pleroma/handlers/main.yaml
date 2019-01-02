@@ -2,4 +2,4 @@
 
 - name: restart pleroma
   become: yes
-  systemd: name="pleroma" state="restarted" daemon_reload="yes"
+  systemd: name="{{pleroma_user}}" state="restarted" daemon_reload="yes"
