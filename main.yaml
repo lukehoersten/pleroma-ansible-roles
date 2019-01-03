@@ -16,17 +16,17 @@
       become: yes
       timezone: name="UTC"
 
-- hosts: pleroma-01
+- hosts: pleroma
   roles:
     - role: pleroma
       pleroma_host: "haskell.social"
       pleroma_user: "pleroma_haskell_social"
-      pleroma_port: 4000
+      pleroma_port: 4001
 
     - role: pleroma
       pleroma_host: "nth.io"
       pleroma_user: "pleroma_nth_io"
-      pleroma_port: 4001
+      pleroma_port: 4000
 
 
 # - hosts: haskell.social
