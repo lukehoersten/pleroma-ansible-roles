@@ -16,25 +16,22 @@
       become: yes
       timezone: name="UTC"
 
+    - name: authorize ssh keys
+      authorized_key:
+        user: "ubuntu"
+        key: "https://github.com/LukeHoersten.keys"
+
 - hosts: pleroma
   roles:
     - role: pleroma
-      pleroma_host: "haskell.social"
       pleroma_user: "pleroma_haskell_social"
+      pleroma_link_host: "haskell.social"
       pleroma_port: 4001
 
+- hosts: pleroma
+  roles:
     - role: pleroma
-      pleroma_host: "nth.io"
       pleroma_user: "pleroma_nth_io"
+      pleroma_link_host: "nth.io"
       pleroma_port: 4000
-
-
-# - hosts: haskell.social
-#   roles:
-#     - nginx
-#     - pleroma
-
-# - hosts: nth.io
-#   roles:
-#     - nginx
-#     - pleroma
+      pleroma_signup_open: "false"

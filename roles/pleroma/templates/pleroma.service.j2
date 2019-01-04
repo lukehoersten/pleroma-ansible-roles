@@ -9,6 +9,7 @@ User={{pleroma_user}}
 WorkingDirectory=/home/{{pleroma_user}}/pleroma
 Environment="HOME=/home/{{pleroma_user}}"
 Environment="MIX_ENV=prod"
+Environment="PLUG_TMPDIR=/tmp/{{pleroma_user}}"
 ExecStart=/usr/local/bin/mix phx.server
 ExecReload=/bin/kill $MAINPID
 KillMode=process

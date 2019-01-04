@@ -6,12 +6,12 @@
 # 3. Copy this file to /etc/nginx/sites-available/ and then add a symlink to it
 #    in /etc/nginx/sites-enabled/ and run 'nginx -s reload' or restart nginx.
 
-proxy_cache_path /tmp/pleroma-media-cache levels=1:2 keys_zone=pleroma_media_cache:10m max_size=10g
+proxy_cache_path /tmp/{{pleroma_user}}-pleroma-media-cache levels=1:2 keys_zone={{pleroma_user}}-pleroma_media_cache:10m max_size=10g
                  inactive=720m use_temp_path=off;
 
 server {
     listen {{nginx_port}};
-    listen [::]:{{nginx_port}};
+    # listen [::]:{{nginx_port}};
     server_name {{nginx_server_name}};
     return 301 https://$server_name$request_uri;
 
@@ -30,7 +30,7 @@ ssl_session_cache shared:ssl_session_cache:10m;
 
 server {
     listen {{nginx_ssl_port}} ssl http2;
-    listen [::]:{{nginx_ssl_port}} ssl ipv6only=on;
+    # listen [::]:{{nginx_ssl_port}} ssl ipv6only=on;
     server_name {{nginx_server_name}};
 
     ssl_certificate /etc/letsencrypt/live/{{nginx_server_name}}/fullchain.pem;
@@ -81,15 +81,15 @@ server {
         proxy_set_header Connection "upgrade";
         proxy_set_header Host $http_host;
 
-        proxy_pass {{pleroma_url}};
+        proxy_pass {{pleroma_proxy_pass}};
 
         client_max_body_size 16m;
     }
 
     location /proxy {
-        proxy_cache pleroma_media_cache;
+        proxy_cache {{pleroma_user}}-pleroma_media_cache;
         proxy_cache_lock on;
         proxy_ignore_client_abort on;
-        proxy_pass {{pleroma_url}};
+        proxy_pass {{pleroma_proxy_pass}};
     }
 }
