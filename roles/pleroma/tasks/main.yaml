@@ -61,7 +61,7 @@
     - "mix local.hex --force"
     - "mix local.rebar --force"
     - "mix deps.get"
-    # - "mix ecto.migrate"
+    - "mix ecto.migrate"
   notify: restart pleroma
   environment:
     MIX_ENV: "prod"
