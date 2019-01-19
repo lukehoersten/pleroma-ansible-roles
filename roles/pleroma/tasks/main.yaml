@@ -12,15 +12,9 @@
   become: yes
   apt: upgrade="dist" update_cache="yes" cache_valid_time="3600"
 
-- name: install extra apt packages
+- name: install pleroma apt packages
   become: yes
-  apt: name="{{item}}"
-  with_items:
-    - "postgresql"
-    - "esl-erlang"
-    - "elixir"
-    - "build-essential"
-    - "git"
+  apt: name="{{pleroma_apt_packages}}"
 
 - name: add users
   become: yes

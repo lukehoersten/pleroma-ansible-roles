@@ -19,3 +19,10 @@ pleroma_char_limit: 5000
 pleroma_signup_open: "true"
 pleroma_db_host: "localhost"
 pleroma_db_superuser: "postgres"
+
+pleroma_apt_packages:
+  - "postgresql"
+  - "esl-erlang"
+  - "elixir"
+  - "build-essential"
+  - "git"
