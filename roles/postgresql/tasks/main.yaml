@@ -1,0 +1,27 @@
+---
+
+- name: install postgresql
+  become: yes
+  apt: name="{{postgresql_apt_packages}}"
+
+- name: configure postgresql data dir
+  become: yes
+  lineinfile:
+    path: "{{postgresql_config_path}}"
+    regexp: "^data_directory = "
+    line: "data_directory = '{{postgresql_data_dir}}'"
+  notify: restart postgres
+
+- name: create postgresql data dir
+  become: yes
+  file:
+    path: "{{postgresql_data_dir}}"
+    state: "directory"
+    mode: "0700"
+    owner: "postgres"
+    group: "postgres"
+  notify: restart postgres
+
+- name: ensure postgresql is started
+  become: yes
+  systemd: name="postgresql" enabled="yes" state="started"

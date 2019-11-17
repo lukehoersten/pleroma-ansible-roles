@@ -1,0 +1,10 @@
+---
+
+postgresql_version: "11"
+postgresql_config_path: "/etc/postgresql/{{postgresql_version}}/main/postgresql.conf"
+postgresql_data_dir: "/var/lib/postgresql/{{postgresql_version}}/main"
+postgresql_apt_packages:
+  - "postgresql-{{postgresql_version}}"
+  - "pgcli"
+  - "postgresql-client"
+  - "postgresql-common"

@@ -9,12 +9,6 @@
   template: src="{{nginx_conf_src}}" dest="/etc/nginx/sites-available/{{nginx_conf_dst}}"
   notify: restart nginx
 
-# https://certbot.eff.org/lets-encrypt/ubuntuxenial-nginx
-- name: add certbot (letsencrypt) repo
-  become: yes
-  apt_repository: repo="ppa:certbot/certbot"
-  when: nginx_enable_ssl
-
 - name: install nginx packages
   become: yes
   apt: name="python-certbot-nginx"

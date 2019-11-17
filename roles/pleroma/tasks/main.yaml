@@ -2,11 +2,11 @@
 
 - name: add erland solutions key
   become: yes
-  apt_key: "url=http://packages.erlang-solutions.com/debian/erlang_solutions.asc"
+  apt_key: url="http://packages.erlang-solutions.com/debian/erlang_solutions.asc"
 
 - name: install erland solutions repo
   become: yes
-  apt_repository: repo="deb http://binaries.erlang-solutions.com/debian bionic contrib"
+  apt_repository: repo="deb http://binaries.erlang-solutions.com/debian buster contrib"
 
 - name: update apt package cache
   become: yes
@@ -26,6 +26,7 @@
   git:
     repo: "https://git.pleroma.social/pleroma/pleroma.git"
     dest: "~{{pleroma_user}}/pleroma"
+    version: "{{pleroma_version}}"
     force: yes
 
 - name: install pleroma config files
@@ -36,7 +37,6 @@
     group: "{{pleroma_user}}"
     mode: "0775"
   become: yes
-  become_user: "{{pleroma_user}}"
   with_items:
     - "setup_db.psql"
     - "prod.secret.exs"
@@ -45,11 +45,18 @@
 - name: install pleroma psql
   become: yes
   become_user: "{{pleroma_db_superuser}}"
-  command: "psql -f ~{{pleroma_user}}/pleroma/config/setup_db.psql -h {{pleroma_db_host}}"
+  command: "psql -f ~{{pleroma_user}}/pleroma/config/setup_db.psql"
   notify: restart pleroma
-  environment:
-    PGUSER: "{{pleroma_db_superuser}}"
-    PGPASSWORD: "{{pleroma_db_superpass}}"
+
+# - name: restore
+#   postgresql_db:
+#     state: "restore"
+#     db: "{{pleroma_user}}"
+#     target: "/tmp/{{pleroma_user}}-backup.sql"
+#     login_user: "{{pleroma_user}}"
+#     login_password: "{{pleroma_db_passwd}}"
+#     login_host: "{{pleroma_db_host}}"
+#   when: "{{pleroma_restore_db}}"
 
 - name: migrate db
   become: yes
@@ -78,3 +85,19 @@
 - name: enable pleroma systemd service
   systemd: name="{{pleroma_user}}" enabled="yes" state="started"
   become: yes
+
+
+# - name: backup db
+#   postgresql_db:
+#     state: "dump"
+#     db: "{{pleroma_user}}"
+#     target: "/tmp/{{pleroma_user}}-backup.sql"
+#     login_user: "{{pleroma_user}}"
+#     login_password: "{{pleroma_db_passwd}}"
+#     login_host: "{{pleroma_db_host}}"
+
+
+
+
+
+# pg_dump -U pleroma_nth_io -h pleroma.ctzpnw3lfkwz.us-east-1.rds.amazonaws.com pleroma_nth_io -f pleroma_nth_io_dump.sql
