@@ -29,23 +29,29 @@
     version: "{{pleroma_version}}"
     force: yes
 
-- name: install pleroma config files
+- name: install pleroma config
   template:
-    src: "{{item}}.j2"
-    dest: "~{{pleroma_user}}/pleroma/config/{{item}}"
+    src: "prod.secret.exs.j2"
+    dest: "~{{pleroma_user}}/pleroma/config/prod.secret.exs"
     owner: "{{pleroma_user}}"
     group: "{{pleroma_user}}"
-    mode: "0775"
+    mode: "0700"
   become: yes
-  with_items:
-    - "setup_db.psql"
-    - "prod.secret.exs"
   notify: restart pleroma
+
+- name: install pleroma db schema file
+  template:
+    src: "setup_db.psql.j2"
+    dest: "/tmp/setup_db.psql"
+    owner: "{{pleroma_db_superuser}}"
+    group: "{{pleroma_db_superuser}}"
+    mode: "0700"
+  become: yes
 
 - name: install pleroma psql
   become: yes
   become_user: "{{pleroma_db_superuser}}"
-  command: "psql -f ~{{pleroma_user}}/pleroma/config/setup_db.psql"
+  command: "psql -f /tmp/setup_db.psql"
   notify: restart pleroma
 
 # - name: restore
