@@ -20,7 +20,7 @@ pleroma_signup_open: "true"
 pleroma_db_host: "localhost"
 pleroma_db_superuser: "postgres"
 
-pleroma_version: "v1.1.5"
+pleroma_version: "v1.1.6"
 
 pleroma_apt_packages:
   - "elixir"
