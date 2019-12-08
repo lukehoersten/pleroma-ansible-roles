@@ -13,13 +13,13 @@
   become: yes
   apt: name="python-certbot-nginx"
   notify: restart nginx
-  when: nginx_enable_ssl
+  when: nginx_enable_certbot
 
 - name: install certbot in nginx
   become: yes
   command: "certbot certonly --nginx -n --agree-tos -d {{nginx_server_name}} -m {{nginx_admin_email}}"
   notify: restart nginx
-  when: nginx_enable_ssl
+  when: nginx_enable_certbot
 
 - name: disable default site
   become: yes

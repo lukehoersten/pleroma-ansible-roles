@@ -2,7 +2,9 @@
 
 nginx_port: 80
 nginx_ssl_port: 443
-nginx_enable_ssl: No
+nginx_ssl_cert: "/etc/letsencrypt/live/{{nginx_server_name}}/fullchain.pem"
+nginx_ssl_privkey: "/etc/letsencrypt/live/{{nginx_server_name}}/privkey.pem"
+nginx_enable_certbot: No
 nginx_server_name: "{{ansible_host}}"
 nginx_conf_dst: "{{nginx_server_name}}.nginx.conf"
 nginx_admin_email: "admin@{{nginx_server_name}}"
