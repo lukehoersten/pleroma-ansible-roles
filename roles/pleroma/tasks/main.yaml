@@ -35,7 +35,7 @@
     dest: "~{{pleroma_user}}/pleroma/config/prod.secret.exs"
     owner: "{{pleroma_user}}"
     group: "{{pleroma_user}}"
-    mode: "0700"
+    mode: "0600"
   become: yes
   notify: restart pleroma
 
@@ -45,7 +45,7 @@
     dest: "/tmp/setup_db.psql"
     owner: "{{pleroma_db_superuser}}"
     group: "{{pleroma_db_superuser}}"
-    mode: "0700"
+    mode: "0600"
   become: yes
 
 - name: install pleroma psql
@@ -53,16 +53,6 @@
   become_user: "{{pleroma_db_superuser}}"
   command: "psql -f /tmp/setup_db.psql"
   notify: restart pleroma
-
-# - name: restore
-#   postgresql_db:
-#     state: "restore"
-#     db: "{{pleroma_user}}"
-#     target: "/tmp/{{pleroma_user}}-backup.sql"
-#     login_user: "{{pleroma_user}}"
-#     login_password: "{{pleroma_db_passwd}}"
-#     login_host: "{{pleroma_db_host}}"
-#   when: "{{pleroma_restore_db}}"
 
 - name: migrate db
   become: yes
@@ -85,25 +75,9 @@
     dest: "/lib/systemd/system/{{pleroma_user}}.service"
     owner: "{{pleroma_user}}"
     group: "{{pleroma_user}}"
-    mode: "0770"
+    mode: "0660"
   become: yes
 
 - name: enable pleroma systemd service
   systemd: name="{{pleroma_user}}" enabled="yes" state="started"
   become: yes
-
-
-# - name: backup db
-#   postgresql_db:
-#     state: "dump"
-#     db: "{{pleroma_user}}"
-#     target: "/tmp/{{pleroma_user}}-backup.sql"
-#     login_user: "{{pleroma_user}}"
-#     login_password: "{{pleroma_db_passwd}}"
-#     login_host: "{{pleroma_db_host}}"
-
-
-
-
-
-# pg_dump -U pleroma_nth_io -h pleroma.ctzpnw3lfkwz.us-east-1.rds.amazonaws.com pleroma_nth_io -f pleroma_nth_io_dump.sql
