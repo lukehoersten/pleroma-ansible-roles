@@ -1,0 +1,5 @@
+---
+
+- name: "restart pleroma {{pleroma_instance}} instance"
+  become: yes
+  systemd: name="pleroma@{{pleroma_instance}}" state="restarted" daemon_reload="yes"

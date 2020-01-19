@@ -1,0 +1,30 @@
+---
+
+pleroma_host: "localhost"
+pleroma_port: 4000
+pleroma_scheme: "http"
+
+pleroma_proxy_pass: "{{pleroma_scheme}}://{{pleroma_host}}:{{pleroma_port}}"
+
+pleroma_link_host: "localhost"
+pleroma_link_port: "443"
+pleroma_link_scheme: "https"
+
+pleroma_instance_name: "{{pleroma_link_host}}"
+pleroma_desc: "A Pleroma fediverse instance."
+pleroma_admin_email: "admin@{{pleroma_link_host}}"
+pleroma_char_limit: 5000
+pleroma_signup_open: "true"
+pleroma_db_host: "localhost"
+pleroma_db_superuser: "postgres"
+
+pleroma_apt_packages:
+  - "curl"
+  - "unzip"
+
+pleroma_branch: "stable"
+pleroma_flavor: "arm"
+
+pleroma_db: "{{pleroma_instance}}"
+pleroma_db_user: "{{pleroma_instance}}"
+pleroma_data_dir: "/var/lib/pleroma/instance_data"

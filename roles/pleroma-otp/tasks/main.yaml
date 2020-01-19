@@ -1,0 +1,113 @@
+---
+
+- name: install pleroma apt packages
+  become: yes
+  apt: name="{{pleroma_apt_packages}}"
+
+- name: add users
+  become: yes
+  user: name="pleroma" shell="/bin/false" home="/opt/pleroma" system="yes"
+
+- name: create config and data directory
+  become: yes
+  file:
+    path: "{{item}}"
+    state: "directory"
+    mode: "0755"
+  with_items:
+    - "{{pleroma_data_dir}}"
+    - "/etc/pleroma"
+
+- name: install pleroma config
+  template:
+    src: "config.exs.j2"
+    dest: "/etc/pleroma/{{pleroma_instance}}.config.exs"
+    mode: "0700"
+  become: yes
+  notify: "restart pleroma {{pleroma_instance}} instance"
+
+- name: create instance data directory
+  become: yes
+  file:
+    path: "{{item}}"
+    state: "directory"
+    owner: "pleroma"
+    group: "pleroma"
+    mode: "0755"
+  with_items:
+    - "{{pleroma_data_dir}}/{{pleroma_instance}}"
+    - "{{pleroma_data_dir}}/{{pleroma_instance}}/uploads"
+    - "{{pleroma_data_dir}}/{{pleroma_instance}}/static"
+    - "{{pleroma_data_dir}}/{{pleroma_instance}}/static/emoji"
+
+# Set config path in systemd: PLEROMA_CONFIG_PATH
+
+# - name: install pleroma db schema file
+#   template:
+#     src: "setup_db.psql.j2"
+#     dest: "/tmp/setup_db.psql"
+#     owner: "{{pleroma_db_superuser}}"
+#     group: "{{pleroma_db_superuser}}"
+#     mode: "0700"
+#   become: yes
+
+# - name: install pleroma psql
+#   become: yes
+#   become_user: "{{pleroma_db_superuser}}"
+#   command: "psql -f /tmp/setup_db.psql"
+#   notify: restart pleroma
+
+
+
+
+
+# MIGERATION
+# mv ~pleroma/uploads/* /var/lib/pleroma/uploads
+# mv ~pleroma/instance/static /var/lib/pleroma/static
+# mv ~pleroma/priv/static/emoji /var/lib/pleroma/static/emoji
+# mv ~pleroma/config/prod.secret.exs /etc/pleroma/config.exs
+# Change `use Mix.Config` at the top to `import Config`
+# rm -r ~pleroma/*
+
+
+- name: download and unarchive pleroma release
+  become: yes
+  unarchive:
+    src: "https://git.pleroma.social/api/v4/projects/2/jobs/artifacts/{{pleroma_branch}}/download?job={{pleroma_flavor}}"
+    dest: "/tmp/"
+    remote_src: yes
+    creates: "/tmp/release"
+  notify: "restart pleroma {{pleroma_instance}} instance"
+
+- name: install pleroma release
+  become: yes
+  copy: remote_src="True" src="/tmp/release/" dest="/opt/pleroma/"
+
+# - name: Remove old files foo
+#   file: path="/path/to/foo" state="absent"
+
+# ***
+# mv /tmp/release/* ~pleroma/
+
+
+# Copy the service into a proper directory
+# cp ~pleroma/installation/pleroma.service /etc/systemd/system/pleroma.service
+
+# - name: "configure pleroma systemd service"
+#   become: yes
+#   copy:
+#     src: "pleroma@.service"
+#     dest: "/lib/systemd/system/pleroma@.service"
+#   notify: "restart pleroma {{pleroma_instance}} instance"
+
+# - name: "ensure pleroma {{pleroma_instance}} instance is enabled and started"
+#   become: yes
+#   systemd: name="pleroma@{{pleroma_instance}}" enabled="yes" state="started"
+
+# - name: migrate db
+#   become: yes
+#   become_user: "pleroma"
+#   command: "/opt/pleroma/bin/pleroma_ctl migrate"
+#   args:
+#     chdir: "/opt/pleroma/"
+#   notify: restart pleroma

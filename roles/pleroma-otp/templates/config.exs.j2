@@ -1,0 +1,43 @@
+use Mix.Config
+
+config :pleroma, Pleroma.Web.Endpoint,
+  url: [host: "{{pleroma_link_host}}", scheme: "{{pleroma_link_scheme}}", port: {{pleroma_link_port}}],
+  http: [port: {{pleroma_port}}, ip: {127, 0, 0, 1}],
+  secret_key_base: "{{pleroma_secret_key}}",
+  secure_cookie_flag: true
+
+config :pleroma, :http_security,
+  enabled: true,
+  sts: true,
+  referrer_policy: "same-origin"
+
+config :pleroma, :instance,
+  name: "{{pleroma_instance_name}}",
+  description: "{{pleroma_desc}}",
+  email: "{{pleroma_admin_email}}",
+  limit: {{pleroma_char_limit}},
+  registrations_open: {{pleroma_signup_open}},
+  invites_enabled: {{pleroma_invites_enabled}}
+
+config :pleroma, Pleroma.Upload,
+  uploader: Pleroma.Uploaders.Local,
+  filters: [Pleroma.Upload.Filter.Dedupe]
+
+config :pleroma, Pleroma.Uploaders.Local,
+  uploads: "{{pleroma_data_dir}}/{{pleroma_instance}}/"
+
+config :pleroma, :media_proxy,
+  enabled: false,
+  redirect_on_failure: true
+  #base_url: "https://cache.pleroma.social"
+
+# Configure your database
+config :pleroma, Pleroma.Repo,
+  adapter: Ecto.Adapters.Postgres,
+  username: "{{pleroma_db_user}}",
+  password: "{{pleroma_db_passwd}}",
+  database: "{{pleroma_db}}",
+  hostname: "{{pleroma_db_host}}",
+  pool_size: 10,
+  timeout: 60000,
+  pool_timeout: 60000
