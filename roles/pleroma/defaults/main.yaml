@@ -14,7 +14,7 @@ pleroma_link_scheme: "https"
 
 pleroma_instance_name: "{{pleroma_link_host}}"
 pleroma_desc: "A Pleroma fediverse instance."
-pleroma_admin_email: "admin@{{pleroma_host}}"
+pleroma_admin_email: "admin@{{pleroma_link_host}}"
 pleroma_char_limit: 5000
 pleroma_signup_open: "true"
 pleroma_db_host: "localhost"
