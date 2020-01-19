@@ -23,8 +23,8 @@ pleroma_apt_packages:
   - "unzip"
 
 pleroma_branch: "stable"
-pleroma_flavor: "arm"
+pleroma_download_url: "https://git.pleroma.social/api/v4/projects/2/jobs/artifacts/{{pleroma_branch}}/download?job={{pleroma_flavor}}"
 
-pleroma_db: "{{pleroma_instance}}"
-pleroma_db_user: "{{pleroma_instance}}"
+pleroma_db: "pleroma_{{pleroma_instance}}"
+pleroma_db_user: "pleroma_{{pleroma_instance}}"
 pleroma_data_dir: "/var/lib/pleroma/instance_data"

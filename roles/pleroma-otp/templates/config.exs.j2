@@ -1,4 +1,4 @@
-use Mix.Config
+import Config
 
 config :pleroma, Pleroma.Web.Endpoint,
   url: [host: "{{pleroma_link_host}}", scheme: "{{pleroma_link_scheme}}", port: {{pleroma_link_port}}],
@@ -17,14 +17,15 @@ config :pleroma, :instance,
   email: "{{pleroma_admin_email}}",
   limit: {{pleroma_char_limit}},
   registrations_open: {{pleroma_signup_open}},
-  invites_enabled: {{pleroma_invites_enabled}}
+  invites_enabled: {{pleroma_invites_enabled}},
+  static_dir: "{{pleroma_data_dir}}/{{pleroma_instance}}/static/"
 
 config :pleroma, Pleroma.Upload,
   uploader: Pleroma.Uploaders.Local,
   filters: [Pleroma.Upload.Filter.Dedupe]
 
 config :pleroma, Pleroma.Uploaders.Local,
-  uploads: "{{pleroma_data_dir}}/{{pleroma_instance}}/"
+  uploads: "{{pleroma_data_dir}}/{{pleroma_instance}}/uploads/"
 
 config :pleroma, :media_proxy,
   enabled: false,

@@ -17,14 +17,17 @@
   with_items:
     - "{{pleroma_data_dir}}"
     - "/etc/pleroma"
+    - "/opt/pleroma"
 
 - name: install pleroma config
   template:
     src: "config.exs.j2"
     dest: "/etc/pleroma/{{pleroma_instance}}.config.exs"
-    mode: "0700"
+    owner: "pleroma"
+    group: "pleroma"
+    mode: "0600"
   become: yes
-  notify: "restart pleroma {{pleroma_instance}} instance"
+  notify: restart pleroma instance
 
 - name: create instance data directory
   become: yes
@@ -40,74 +43,59 @@
     - "{{pleroma_data_dir}}/{{pleroma_instance}}/static"
     - "{{pleroma_data_dir}}/{{pleroma_instance}}/static/emoji"
 
-# Set config path in systemd: PLEROMA_CONFIG_PATH
+- name: install pleroma db schema file
+  template:
+    src: "setup_db.psql.j2"
+    dest: "/tmp/setup_db.psql"
+    owner: "{{pleroma_db_superuser}}"
+    group: "{{pleroma_db_superuser}}"
+    mode: "0600"
+  become: yes
 
-# - name: install pleroma db schema file
-#   template:
-#     src: "setup_db.psql.j2"
-#     dest: "/tmp/setup_db.psql"
-#     owner: "{{pleroma_db_superuser}}"
-#     group: "{{pleroma_db_superuser}}"
-#     mode: "0700"
-#   become: yes
-
-# - name: install pleroma psql
-#   become: yes
-#   become_user: "{{pleroma_db_superuser}}"
-#   command: "psql -f /tmp/setup_db.psql"
-#   notify: restart pleroma
-
-
-
-
-
-# MIGERATION
-# mv ~pleroma/uploads/* /var/lib/pleroma/uploads
-# mv ~pleroma/instance/static /var/lib/pleroma/static
-# mv ~pleroma/priv/static/emoji /var/lib/pleroma/static/emoji
-# mv ~pleroma/config/prod.secret.exs /etc/pleroma/config.exs
-# Change `use Mix.Config` at the top to `import Config`
-# rm -r ~pleroma/*
-
+- name: install pleroma psql
+  become: yes
+  become_user: "{{pleroma_db_superuser}}"
+  command: "psql -f /tmp/setup_db.psql"
+  notify: restart pleroma instance
 
 - name: download and unarchive pleroma release
   become: yes
   unarchive:
-    src: "https://git.pleroma.social/api/v4/projects/2/jobs/artifacts/{{pleroma_branch}}/download?job={{pleroma_flavor}}"
+    src: "{{pleroma_download_url}}"
     dest: "/tmp/"
     remote_src: yes
     creates: "/tmp/release"
-  notify: "restart pleroma {{pleroma_instance}} instance"
+  notify: restart pleroma instance
 
 - name: install pleroma release
   become: yes
-  copy: remote_src="True" src="/tmp/release/" dest="/opt/pleroma/"
+  copy: remote_src="True" src="/tmp/release/" dest="/opt/pleroma/" owner="pleroma" group="pleroma"
+  notify: restart pleroma instance
 
-# - name: Remove old files foo
-#   file: path="/path/to/foo" state="absent"
-
-# ***
-# mv /tmp/release/* ~pleroma/
-
-
-# Copy the service into a proper directory
-# cp ~pleroma/installation/pleroma.service /etc/systemd/system/pleroma.service
-
-# - name: "configure pleroma systemd service"
+# - name: remove tmp release folder
 #   become: yes
-#   copy:
-#     src: "pleroma@.service"
-#     dest: "/lib/systemd/system/pleroma@.service"
-#   notify: "restart pleroma {{pleroma_instance}} instance"
+#   file: path="{{item}}" state="absent"
+#   with_items:
+#     - "/tmp/setup_db.psql"
+#     - "/tmp/release/"
 
-# - name: "ensure pleroma {{pleroma_instance}} instance is enabled and started"
-#   become: yes
-#   systemd: name="pleroma@{{pleroma_instance}}" enabled="yes" state="started"
+- name: "configure pleroma systemd service"
+  become: yes
+  copy:
+    src: "pleroma@.service"
+    dest: "/lib/systemd/system/pleroma@.service"
+  notify: restart pleroma instance
 
-# - name: migrate db
-#   become: yes
-#   become_user: "pleroma"
-#   command: "/opt/pleroma/bin/pleroma_ctl migrate"
-#   args:
-#     chdir: "/opt/pleroma/"
-#   notify: restart pleroma
+- name: "ensure pleroma {{pleroma_instance}} instance is enabled and started"
+  become: yes
+  systemd: name="pleroma@{{pleroma_instance}}.service" enabled="yes" state="started"
+
+- name: migrate db
+  become: yes
+  become_user: "pleroma"
+  command: "/opt/pleroma/bin/pleroma_ctl migrate"
+  args:
+    chdir: "/opt/pleroma/"
+  environment:
+    PLEROMA_CONFIG_PATH: "/etc/pleroma/{{pleroma_instance}}.config.exs"
+  notify: restart pleroma instance
