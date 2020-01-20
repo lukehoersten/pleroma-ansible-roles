@@ -12,7 +12,7 @@
   copy:
     src: "pleroma-s3-backup@.service"
     dest: "/lib/systemd/system/pleroma-s3-backup@.service"
-    mode: "0755"
+    mode: "0644"
   notify: restart pleroma instance s3 backup
 
 - name: ensure s3 backup is enabled
