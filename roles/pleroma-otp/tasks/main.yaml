@@ -40,19 +40,20 @@
     - "{{pleroma_data_dir}}/{{pleroma_instance}}/static/emoji"
 
 - name: install pleroma db schema file
+  become: yes
   template:
     src: "setup_db.psql.j2"
-    dest: "/tmp/setup_db.psql"
+    dest: "/tmp/setup_db_{{pleroma_instance}}.psql"
     owner: "{{pleroma_db_superuser}}"
     group: "{{pleroma_db_superuser}}"
     mode: "0600"
-  become: yes
+  changed_when: false
 
 - name: install pleroma psql
   become: yes
   become_user: "{{pleroma_db_superuser}}"
-  command: "psql -f /tmp/setup_db.psql"
-  notify: restart pleroma instance
+  command: "psql -f /tmp/setup_db_{{pleroma_instance}}.psql"
+  changed_when: false
 
 - name: download and unarchive pleroma release
   become: yes
@@ -98,4 +99,4 @@
     chdir: "/opt/pleroma/"
   environment:
     PLEROMA_CONFIG_PATH: "/etc/pleroma/{{pleroma_instance}}.config.exs"
-  notify: restart pleroma instance
+  changed_when: false

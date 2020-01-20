@@ -18,7 +18,7 @@
 - name: install certbot in nginx
   become: yes
   command: "certbot certonly --nginx -n --agree-tos -d {{nginx_server_name}} -m {{nginx_admin_email}}"
-  notify: restart nginx
+  changed_when: false
   when: nginx_enable_certbot
 
 - name: disable default site
