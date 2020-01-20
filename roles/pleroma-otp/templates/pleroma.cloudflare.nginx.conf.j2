@@ -12,7 +12,7 @@ proxy_cache_path /tmp/{{pleroma_instance}}-pleroma-media-cache levels=1:2 keys_z
 server {
     listen {{nginx_port}};
     # listen [::]:{{nginx_port}};
-    server_name _;
+    server_name {{nginx_server_name}};
     return 301 https://$host$request_uri;
 }
 
@@ -22,7 +22,7 @@ ssl_session_cache shared:ssl_session_cache:10m;
 server {
     listen {{nginx_ssl_port}} ssl http2;
     # listen [::]:{{nginx_ssl_port}} ssl ipv6only=on;
-    server_name _;
+    server_name {{nginx_server_name}};
 
     ssl_certificate {{nginx_ssl_cert}};
     ssl_certificate_key {{nginx_ssl_privkey}};

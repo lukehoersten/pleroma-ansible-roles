@@ -79,14 +79,14 @@
 #     - "/tmp/setup_db.psql"
 #     - "/tmp/release/"
 
-- name: "configure pleroma systemd service"
+- name: configure pleroma systemd service
   become: yes
   copy:
     src: "pleroma@.service"
     dest: "/lib/systemd/system/pleroma@.service"
   notify: restart pleroma instance
 
-- name: "ensure pleroma {{pleroma_instance}} instance is enabled and started"
+- name: ensure pleroma instance is enabled and started
   become: yes
   systemd: name="pleroma@{{pleroma_instance}}.service" enabled="yes" state="started"
 

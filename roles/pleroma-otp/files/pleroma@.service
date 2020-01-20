@@ -9,8 +9,9 @@ WorkingDirectory=/opt/pleroma
 Environment="HOME=/opt/pleroma"
 Environment="PLEROMA_CONFIG_PATH=/etc/pleroma/%i.config.exs"
 Environment="PLUG_TMPDIR=/tmp/%i"
+Environment="RELEASE_NODE=%i@127.0.0.1"
 
-ExecStart=/opt/pleroma/bin/pleroma daemon
+ExecStart=/opt/pleroma/bin/pleroma start
 ExecReload=/opt/pleroma/bin/pleroma stop
 
 KillMode=process
