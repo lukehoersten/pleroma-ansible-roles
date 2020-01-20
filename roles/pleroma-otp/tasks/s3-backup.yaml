@@ -1,0 +1,20 @@
+---
+
+- name: create s3 backup shell script
+  become: yes
+  copy:
+    src: "pleroma-s3-backup.sh"
+    dest: "/usr/local/bin/pleroma-s3-backup.sh"
+    mode: "0755"
+
+- name: configure s3 backup systemd service
+  become: yes
+  copy:
+    src: "pleroma-s3-backup@.service"
+    dest: "/lib/systemd/system/pleroma-s3-backup@.service"
+    mode: "0755"
+  notify: restart pleroma instance s3 backup
+
+- name: ensure s3 backup is enabled
+  become: yes
+  systemd: name="pleroma-s3-backup@{{pleroma_instance}}.service" enabled="yes" state="started"

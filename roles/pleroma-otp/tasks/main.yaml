@@ -1,9 +1,5 @@
 ---
 
-- name: install pleroma apt packages
-  become: yes
-  apt: name="{{pleroma_apt_packages}}"
-
 - name: add users
   become: yes
   user: name="pleroma" shell="/bin/false" home="/opt/pleroma" system="yes"
@@ -72,12 +68,16 @@
   copy: remote_src="True" src="/tmp/release/" dest="/opt/pleroma/" owner="pleroma" group="pleroma"
   notify: restart pleroma instance
 
-# - name: remove tmp release folder
-#   become: yes
-#   file: path="{{item}}" state="absent"
-#   with_items:
-#     - "/tmp/setup_db.psql"
-#     - "/tmp/release/"
+- name: remove tmp release folder
+  become: yes
+  file: path="{{item}}" state="absent"
+  with_items:
+    - "/tmp/setup_db.psql"
+    - "/tmp/release/"
+  when: pleroma_cleanup_tmp
+
+- import_tasks: s3-backup.yml
+  when: pleroma_s3_backup_enabled
 
 - name: configure pleroma systemd service
   become: yes
