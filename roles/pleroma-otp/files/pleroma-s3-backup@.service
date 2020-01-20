@@ -3,7 +3,7 @@ Description=Pleroma s3 backup for instance "%I"
 
 [Service]
 Type=oneshot
-ExecStart=/usr/local/bin/pleroma-prepare-backup.sh %i
+ExecStart=/usr/local/bin/pleroma-s3-backup.sh %i
 
 [Install]
 WantedBy=aws-s3-backup.target

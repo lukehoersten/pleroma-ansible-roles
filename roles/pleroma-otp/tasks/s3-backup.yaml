@@ -17,4 +17,4 @@
 
 - name: ensure s3 backup is enabled
   become: yes
-  systemd: name="pleroma-s3-backup@{{pleroma_instance}}.service" enabled="yes" state="started"
+  systemd: name="pleroma-s3-backup@{{pleroma_instance}}.service" enabled="yes"
