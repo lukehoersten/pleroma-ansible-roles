@@ -1,7 +1,0 @@
-CREATE USER {{pleroma_user}} WITH ENCRYPTED PASSWORD '{{pleroma_db_passwd}}';
-CREATE DATABASE {{pleroma_user}} WITH OWNER {{pleroma_user}};
-\c {{pleroma_user}};
---Extensions made by ecto.migrate that need superuser access
-CREATE EXTENSION IF NOT EXISTS citext;
-CREATE EXTENSION IF NOT EXISTS pg_trgm;
-CREATE EXTENSION IF NOT EXISTS "uuid-ossp";
