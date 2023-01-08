@@ -1,0 +1,80 @@
+# default nginx site config for Pleroma
+#
+# Simple installation instructions:
+# 1. Install your TLS certificate, possibly using Let's Encrypt.
+# 2. Replace 'example.tld' with your instance's domain wherever it appears.
+# 3. Copy this file to /etc/nginx/sites-available/ and then add a symlink to it
+#    in /etc/nginx/sites-enabled/ and run 'nginx -s reload' or restart nginx.
+
+proxy_cache_path /tmp/{{pleroma_instance}}-pleroma-media-cache levels=1:2 keys_zone={{pleroma_instance}}-pleroma_media_cache:10m max_size=10g
+                 inactive=720m use_temp_path=off;
+
+server {
+    listen 80;
+    server_name {{nginx_server_name}};
+    return 301 https://$host$request_uri;
+}
+
+# Enable SSL session caching for improved performance
+ssl_session_cache shared:ssl_session_cache:10m;
+
+server {
+    listen 443 ssl http2;
+    server_name {{nginx_server_name}};
+
+    ssl_certificate {{nginx_ssl_cert}};
+    ssl_certificate_key {{nginx_ssl_privkey}};
+    ssl_ecdh_curve X25519:prime256v1:secp384r1:secp521r1;
+
+    add_header Strict-Transport-Security "max-age=31536000" always;
+
+    gzip_vary on;
+    gzip_proxied any;
+    gzip_comp_level 6;
+    gzip_buffers 16 8k;
+    gzip_http_version 1.1;
+    gzip_types text/plain text/css application/json application/javascript text/xml application/xml application/xml+rss text/javascript application/activity+json application/atom+xml;
+
+    # the nginx default is 1m, not enough for large media uploads
+    client_max_body_size 16m;
+
+    location = / {
+        return 301 http://www.$host$request_uri;
+    }
+
+    location / {
+        try_files $uri @pleroma;
+    }
+
+    location @pleroma {
+        add_header X-XSS-Protection "1; mode=block";
+        add_header X-Permitted-Cross-Domain-Policies none;
+        add_header X-Frame-Options DENY;
+        add_header X-Content-Type-Options nosniff;
+        add_header Referrer-Policy same-origin;
+        add_header X-Download-Options noopen;
+
+        add_header Strict-Transport-Security "max-age=31536000; includeSubDomains";
+
+        proxy_http_version 1.1;
+        proxy_set_header Upgrade $http_upgrade;
+        proxy_set_header Connection "upgrade";
+        proxy_set_header Host $http_host;
+
+        proxy_pass {{pleroma_proxy_pass}};
+
+        client_max_body_size 16m;
+    }
+
+    location /proxy {
+        proxy_cache {{pleroma_instance}}-pleroma_media_cache;
+        proxy_cache_lock on;
+        proxy_ignore_client_abort on;
+        proxy_pass {{pleroma_proxy_pass}};
+    }
+
+    # don't expose prometheus stats publicly
+    location /api/pleroma/app_metrics {
+        return 404;
+    }
+}

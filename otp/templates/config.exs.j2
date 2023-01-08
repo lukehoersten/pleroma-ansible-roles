@@ -2,7 +2,7 @@ import Config
 
 config :pleroma, Pleroma.Web.Endpoint,
   url: [host: "{{pleroma_link_host}}", scheme: "{{pleroma_link_scheme}}", port: {{pleroma_link_port}}],
-  http: [port: {{pleroma_port}}, ip: {127, 0, 0, 1}],
+  http: [port: {{pleroma_port}}, ip: {0, 0, 0, 0}],
   secret_key_base: "{{pleroma_secret_key}}",
   secure_cookie_flag: true
 
@@ -28,11 +28,9 @@ config :pleroma, Pleroma.Uploaders.Local,
   uploads: "{{pleroma_data_dir}}/{{pleroma_instance}}/uploads/"
 
 config :pleroma, :media_proxy,
-  enabled: false,
+  enabled: true,
   redirect_on_failure: true
-  #base_url: "https://cache.pleroma.social"
 
-# Configure your database
 config :pleroma, Pleroma.Repo,
   adapter: Ecto.Adapters.Postgres,
   username: "{{pleroma_db_user}}",
@@ -40,5 +38,16 @@ config :pleroma, Pleroma.Repo,
   database: "{{pleroma_db}}",
   hostname: "{{pleroma_db_host}}",
   pool_size: 10,
-  timeout: 60000,
-  pool_timeout: 60000
+  timeout: 60000
+
+config :prometheus, Pleroma.Web.Endpoint.MetricsExporter,
+  enabled: true
+#   ip_whitelist: ["127.0.0.1"],
+#   path: "/api/pleroma/app_metrics",
+#   format: :text
+
+config :logger,
+  backends: [{ExSyslogger, :ex_syslogger}]
+
+config :logger, :ex_syslogger,
+  level: :warn

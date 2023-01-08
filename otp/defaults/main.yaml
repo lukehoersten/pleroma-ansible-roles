@@ -18,11 +18,12 @@ pleroma_signup_open: "true"
 pleroma_db_host: "localhost"
 pleroma_db_superuser: "postgres"
 
-pleroma_download_url: "https://git.pleroma.social/api/v4/projects/2/jobs/artifacts/stable/download?job={{pleroma_flavor}}"
-
 pleroma_db: "pleroma_{{pleroma_instance}}"
 pleroma_db_user: "pleroma_{{pleroma_instance}}"
 pleroma_data_dir: "/var/lib/pleroma/instance_data"
 
-pleroma_s3_backup_enabled: true
-pleroma_cleanup_tmp: false
+pleroma_download_url: "https://git.pleroma.social/api/v4/projects/2/jobs/artifacts/stable/download?job={{pleroma_arch}}"
+
+pleroma_soapbox: false
+pleroma_soapbox_version: "v3.0.0"
+pleroma_soapbox_download_url: "https://gitlab.com/soapbox-pub/soapbox-fe/-/jobs/artifacts/{{pleroma_soapbox_version}}/download?job=build-production"

@@ -1,9 +1,5 @@
 ---
 
-- name: restart pleroma instance
-  become: yes
-  systemd: name="pleroma@{{pleroma_instance}}.service" state="restarted" daemon_reload="yes"
-
 - name: restart pleroma instance s3 backup
   become: yes
   systemd: name="pleroma-s3-backup@{{pleroma_instance}}.service" enabled="yes" daemon_reload="yes"

@@ -1,0 +1,12 @@
+{
+	 "Rules": [
+		  {
+				"ID": "pleroma-expiration",
+				"Filter": {},
+				"Status": "Enabled",
+				"NoncurrentVersionExpiration": {
+					 "NoncurrentDays": 30
+				}
+		  }
+	 ]
+}

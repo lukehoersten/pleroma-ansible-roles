@@ -1,6 +1,7 @@
 [Unit]
 Description=Pleroma social network instance "%I"
-After=network.target postgresql.service nginx.service
+After=network.target postgresql.service
+Before=nginx.service
 
 [Service]
 User=pleroma

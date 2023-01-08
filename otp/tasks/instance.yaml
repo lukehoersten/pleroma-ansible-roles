@@ -1,21 +1,6 @@
 ---
 
-- name: add users
-  become: yes
-  user: name="pleroma" shell="/bin/false" home="/opt/pleroma" system="yes"
-
-- name: create config and data directory
-  become: yes
-  file:
-    path: "{{item}}"
-    state: "directory"
-    mode: "0755"
-  with_items:
-    - "{{pleroma_data_dir}}"
-    - "/etc/pleroma"
-    - "/opt/pleroma"
-
-- name: install pleroma config
+- name: install pleroma instance config
   template:
     src: "config.exs.j2"
     dest: "/etc/pleroma/{{pleroma_instance}}.config.exs"
@@ -33,11 +18,10 @@
     owner: "pleroma"
     group: "pleroma"
     mode: "0755"
-  with_items:
+  loop:
     - "{{pleroma_data_dir}}/{{pleroma_instance}}"
     - "{{pleroma_data_dir}}/{{pleroma_instance}}/uploads"
     - "{{pleroma_data_dir}}/{{pleroma_instance}}/static"
-    - "{{pleroma_data_dir}}/{{pleroma_instance}}/static/emoji"
 
 - name: install pleroma db schema file
   become: yes
@@ -47,7 +31,6 @@
     owner: "{{pleroma_db_superuser}}"
     group: "{{pleroma_db_superuser}}"
     mode: "0600"
-  changed_when: false
 
 - name: install pleroma psql
   become: yes
@@ -55,37 +38,8 @@
   command: "psql -f /tmp/setup_db_{{pleroma_instance}}.psql"
   changed_when: false
 
-- name: download and unarchive pleroma release
-  become: yes
-  unarchive:
-    src: "{{pleroma_download_url}}"
-    dest: "/tmp/"
-    remote_src: yes
-    creates: "/tmp/release"
-  notify: restart pleroma instance
-
-- name: install pleroma release
-  become: yes
-  copy: remote_src="True" src="/tmp/release/" dest="/opt/pleroma/" owner="pleroma" group="pleroma"
-  notify: restart pleroma instance
-
-- name: remove tmp release folder
-  become: yes
-  file: path="{{item}}" state="absent"
-  with_items:
-    - "/tmp/setup_db.psql"
-    - "/tmp/release/"
-  when: pleroma_cleanup_tmp
-
-- import_tasks: s3-backup.yaml
-  when: pleroma_s3_backup_enabled
-
-- name: configure pleroma systemd service
-  become: yes
-  copy:
-    src: "pleroma@.service"
-    dest: "/lib/systemd/system/pleroma@.service"
-  notify: restart pleroma instance
+- include_tasks: soapbox.yaml
+  when: pleroma_soapbox
 
 - name: ensure pleroma instance is enabled and started
   become: yes

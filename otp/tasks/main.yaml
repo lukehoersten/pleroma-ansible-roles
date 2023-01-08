@@ -1,0 +1,39 @@
+---
+
+- name: add pleroma user
+  become: yes
+  user: name="pleroma" shell="/bin/false" home="/opt/pleroma" system="yes"
+
+- name: apt install pleroma dependencies
+  become: yes
+  apt: name="{{item}}"
+  loop:
+    - "libmagic-dev"
+    - "libtinfo5"
+
+- name: create pleroma config and data directories
+  become: yes
+  file:
+    path: "{{item}}"
+    state: "directory"
+    mode: "0755"
+  loop:
+    - "{{pleroma_data_dir}}"
+    - "/etc/pleroma"
+    - "/opt/pleroma"
+
+- name: configure pleroma systemd service
+  become: yes
+  copy:
+    src: "pleroma@.service"
+    dest: "/lib/systemd/system/pleroma@.service"
+  notify: restart pleroma instance
+
+- name: check if pleroma release exists
+  stat: path="/tmp/release/"
+  register: release
+
+- include_tasks: install.yaml
+  when: not release.stat.exists
+
+- include_tasks: instance.yaml

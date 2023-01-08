@@ -10,8 +10,7 @@ proxy_cache_path /tmp/{{pleroma_instance}}-pleroma-media-cache levels=1:2 keys_z
                  inactive=720m use_temp_path=off;
 
 server {
-    listen {{nginx_port}};
-    # listen [::]:{{nginx_port}};
+    listen 80;
     server_name {{nginx_server_name}};
     return 301 https://$host$request_uri;
 }
@@ -20,18 +19,12 @@ server {
 ssl_session_cache shared:ssl_session_cache:10m;
 
 server {
-    listen {{nginx_ssl_port}} ssl http2;
-    # listen [::]:{{nginx_ssl_port}} ssl ipv6only=on;
+    listen 443 ssl http2;
     server_name {{nginx_server_name}};
 
     ssl_certificate {{nginx_ssl_cert}};
     ssl_certificate_key {{nginx_ssl_privkey}};
-    include /etc/letsencrypt/options-ssl-nginx.conf;
-    # ssl_dhparam /etc/letsencrypt/ssl-dhparams.pem;
-
     ssl_ecdh_curve X25519:prime256v1:secp384r1:secp521r1;
-    ssl_stapling on;
-    ssl_stapling_verify on;
 
     add_header Strict-Transport-Security "max-age=31536000" always;
 
@@ -70,5 +63,10 @@ server {
         proxy_cache_lock on;
         proxy_ignore_client_abort on;
         proxy_pass {{pleroma_proxy_pass}};
+    }
+
+    # don't expose prometheus stats publicly
+    location /api/pleroma/app_metrics {
+        return 404;
     }
 }

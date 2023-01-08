@@ -1,0 +1,24 @@
+---
+
+- name: download and unarchive pleroma release
+  become: yes
+  unarchive:
+    src: "{{pleroma_download_url}}"
+    dest: "/tmp/"
+    remote_src: yes
+
+- name: delete old pleroma release
+  become: yes
+  file:
+    path: "/opt/pleroma/"
+    state: "absent"
+
+- name: install pleroma release
+  become: yes
+  copy:
+    remote_src: true
+    src: "/tmp/release/"
+    dest: "/opt/pleroma/"
+    owner: "pleroma"
+    group: "pleroma"
+  notify: restart all pleroma instances

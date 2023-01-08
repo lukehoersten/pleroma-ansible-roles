@@ -1,11 +1,10 @@
 #!/bin/bash
 
 INSTANCE=$1
-DATE=`date --iso-8601`
 
 BUCKET="pleroma-${INSTANCE//_/-}-backup"
 BACKUP_DIR="/tmp/s3-backup/$BUCKET"
-BACKUP_TAR="/tmp/s3-backup/$BUCKET-$DATE.tgz"
+BACKUP_TAR="/tmp/s3-backup/$BUCKET.tgz"
 
 DB_NAME="pleroma_$INSTANCE"
 CONFIG="/etc/pleroma/$INSTANCE.config.exs"
@@ -23,4 +22,9 @@ cp -r $STATIC_DIR "$BACKUP_DIR/"
 
 tar -zc -f $BACKUP_TAR $BACKUP_DIR
 aws s3 mb "s3://$BUCKET/"
+aws s3api put-bucket-versioning --bucket "$BUCKET" --versioning-configuration Status=Enabled
+aws s3api put-bucket-lifecycle-configuration --bucket "$BUCKET" --lifecycle-configuration "file:///usr/local/share/pleroma-s3-backup-lifecycle.json"
 aws s3 cp $BACKUP_TAR "s3://$BUCKET/"
+
+rm $BACKUP_TAR
+rm -r $BACKUP_DIR

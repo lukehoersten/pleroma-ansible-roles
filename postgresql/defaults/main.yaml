@@ -1,6 +1,7 @@
 ---
 
-postgresql_version: "11"
+# migrate PG version with pg_upgradecluster (see manpage)
+postgresql_version: "14"
 postgresql_config_path: "/etc/postgresql/{{postgresql_version}}/main/postgresql.conf"
 postgresql_data_dir: "/var/lib/postgresql/{{postgresql_version}}/main"
 postgresql_apt_packages:
