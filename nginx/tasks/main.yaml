@@ -1,39 +1,46 @@
 ---
 
-- name: install nginx packages
+- name: apt install nginx
   become: yes
   apt: name="nginx"
-
-- name: install site
-  become: yes
-  template: src="{{nginx_conf_src}}" dest="/etc/nginx/sites-available/{{nginx_conf_dst}}"
   notify: restart nginx
-
-- name: install nginx packages
-  become: yes
-  apt: name="python-certbot-nginx"
-  notify: restart nginx
-  when: nginx_enable_certbot
-
-- name: install certbot in nginx
-  become: yes
-  command: "certbot certonly --nginx -n --agree-tos -d {{nginx_server_name}} -m {{nginx_admin_email}}"
-  changed_when: false
-  when: nginx_enable_certbot
 
 - name: disable default site
   become: yes
   file: path="/etc/nginx/sites-enabled/default" state="absent"
-  notify: restart nginx
+  notify: reload nginx
 
-- name: enable site
+- name: install base config
+  become: yes
+  copy: src="nginx.conf" dest="/etc/nginx/nginx.conf"
+  notify: reload nginx
+
+- name: make stream dirs
+  become: yes
+  file: path="/etc/nginx/streams-{{item}}" state="directory"
+  loop: ["available", "enabled"]
+  notify: reload nginx
+
+- name: make config available
+  become: yes
+  template:
+    src:  "{{nginx_conf_src}}"
+    dest: "/etc/nginx/{{nginx_server_type}}s-available/{{nginx_server_name}}.conf"
+  notify: reload nginx
+
+- name: enable config
   become: yes
   file:
-    src:  "/etc/nginx/sites-available/{{nginx_conf_dst}}"
-    dest: "/etc/nginx/sites-enabled/{{nginx_conf_dst}}"
+    src:  "/etc/nginx/{{nginx_server_type}}s-available/{{nginx_server_name}}.conf"
+    dest: "/etc/nginx/{{nginx_server_type}}s-enabled/{{nginx_server_name}}.conf"
     state: "link"
-  notify: restart nginx
+  notify: reload nginx
+
+- name: copy root files
+  become: yes
+  copy: src="{{nginx_root_src}}" dest="{{nginx_root_dest}}/"
+  when: nginx_root
 
 - name: enable nginx service
   become: yes
-  systemd: name="nginx" enabled="yes" state="started"
+  systemd: name="nginx.service" enabled="yes" state="started" daemon_reload="yes"
